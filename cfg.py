@@ -27,6 +27,7 @@ gui_bottom = .05
 gui_height = .9
 gui_right = gui_left + gui_width
 gui_top = gui_bottom + gui_height
+# vel text
 gui_vel_text_vert_offset = .05
 gui_vel_text_horiz_offset = .001
 gui_vel_rl_pos = ( gui_left   + gui_vel_text_horiz_offset ,
@@ -38,6 +39,16 @@ gui_vel_fl_pos = ( gui_left   + gui_vel_text_horiz_offset ,
 gui_vel_fr_pos = ( gui_right  - gui_vel_text_horiz_offset , 
                    gui_top    - gui_vel_text_vert_offset  )
 gui_vel_max = 35.0
+# drivetrain image
+gui_drivetrain_ratio = [3.0, 4.0]
+gui_drivetrain_size = [.6, .8] # width height (3:4 ratio)
+gui_drivetrain_pos = [.5, .5] # horiz vert
+gui_drivetrain_extent = [
+  gui_drivetrain_pos[0] - gui_drivetrain_size[0]/2.0, # horiz min
+  gui_drivetrain_pos[0] + gui_drivetrain_size[0]/2.0, # horiz max
+  gui_drivetrain_pos[1] - gui_drivetrain_size[1]/2.0, # vert min
+  gui_drivetrain_pos[1] + gui_drivetrain_size[1]/2.0, # vert max
+  ]
 
 # Vehicle parameters
 wheel_diameter = 0.651

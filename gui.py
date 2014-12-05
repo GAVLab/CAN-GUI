@@ -35,7 +35,7 @@ class CanGui(object):
       self.ax.axes.get_xaxis().set_visible(False)
       self.ax.axes.get_yaxis().set_visible(False)
       # drivetrain picture
-      plt.imshow(self.drivetrain_img)
+      plt.imshow(self.drivetrain_img, extent=cfg.gui_drivetrain_extent)
       # wheel speed text
       self.ax.text(cfg.gui_vel_rl_pos[0], cfg.gui_vel_rl_pos[1],
                    str(round(data['wheel_speed_rear_left'],1)) + '\n(m/s)',
