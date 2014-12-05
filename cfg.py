@@ -5,11 +5,13 @@ from math import pi
 ### Settings
 ################################################################################
 
+is_live = True
+
 # MOOS Settings
 moos_ip = '127.0.0.1'
 moos_port = 9000
 moos_name = 'CAN GUI'
-moos_freq = 10.0
+moos_freq = 20.0
 moos_vars = {               # name in MOOS
   'wheel_rpm_rear_left':    'Wheel_SpeedRL',
   'wheel_rpm_rear_right':   'Wheel_SpeedRR',
@@ -19,7 +21,7 @@ moos_vars = {               # name in MOOS
 }
 
 # GUI settings
-gui_freq = 1.0
+gui_freq = 10.0
 gui_dt = 1.0/gui_freq
 gui_left = .05
 gui_width = .9
