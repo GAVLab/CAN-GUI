@@ -11,6 +11,7 @@ import matplotlib.image as mpimg
 from pprint import pprint
 import numpy as np
 import os
+from scipy import ndimage
 
 
 class CanGui(object):
@@ -18,45 +19,64 @@ class CanGui(object):
   def __init__(self, ifx):
     self.ifx = ifx # comms interface
     plt.ion() # allow continuing after show() called
-    self.drivetrain_img_path = os.path.join( \
-                                 os.path.dirname(os.path.abspath(__file__)), \
-                                 'img', 'drivetrain.png')
-    self.drivetrain_img = mpimg.imread(self.drivetrain_img_path)
-    self.fig, self.ax = plt.subplots()
+    drivetrain_img_path = os.path.join( \
+                            os.path.dirname(os.path.abspath(__file__)), \
+                            'img', 'drivetrain.png')
+    steerwheel_img_path = os.path.join( \
+                            os.path.dirname(os.path.abspath(__file__)), \
+                            'img', 'steeringwheel_arrow.png')
+    self.drivetrain_img = mpimg.imread(drivetrain_img_path)
+    self.fig, _ = plt.subplots()
+    self.fig.set_facecolor('w')
+    self.steerwheel_img = ndimage.imread(steerwheel_img_path)
     plt.show()
 
   def _update(self):
-    print '\nCanGui'
     try:
       data = self.ifx.get_latest()
-      pprint(data)
+      # print '\nCanGui'
+      # pprint(data)
       self.fig.clf()
-      self.ax = self.fig.gca()
-      self.ax.axes.get_xaxis().set_visible(False)
-      self.ax.axes.get_yaxis().set_visible(False)
+
+      self.wheelspeed_ax = plt.subplot(121)
+      # self.ax = self.fig.gca()
+      self.wheelspeed_ax.axes.get_xaxis().set_visible(False)
+      self.wheelspeed_ax.axes.get_yaxis().set_visible(False)
       # drivetrain picture
       plt.imshow(self.drivetrain_img, extent=cfg.gui_drivetrain_extent)
       # wheel speed text
-      self.ax.text(cfg.gui_vel_rl_pos[0], cfg.gui_vel_rl_pos[1],
+      self.wheelspeed_ax.text(cfg.gui_vel_rl_pos[0], cfg.gui_vel_rl_pos[1],
                    str(round(data['wheel_speed_rear_left'],1)) + '\n(m/s)',
                    horizontalalignment='left',
                    verticalalignment='bottom',
-                   transform=self.ax.transAxes)
-      self.ax.text(cfg.gui_vel_rr_pos[0], cfg.gui_vel_rr_pos[1],
+                   transform=self.wheelspeed_ax.transAxes)
+      self.wheelspeed_ax.text(cfg.gui_vel_rr_pos[0], cfg.gui_vel_rr_pos[1],
                    str(round(data['wheel_speed_rear_right'],1)) + '\n(m/s)',
                    horizontalalignment='right',
                    verticalalignment='bottom',
-                   transform=self.ax.transAxes)
-      self.ax.text(cfg.gui_vel_fl_pos[0], cfg.gui_vel_fl_pos[1],
+                   transform=self.wheelspeed_ax.transAxes)
+      self.wheelspeed_ax.text(cfg.gui_vel_fl_pos[0], cfg.gui_vel_fl_pos[1],
                    str(round(data['wheel_speed_front_left'],1)) + '\n(m/s)',
                    horizontalalignment='left',
                    verticalalignment='top',
-                   transform=self.ax.transAxes)
-      self.ax.text(cfg.gui_vel_fr_pos[0], cfg.gui_vel_fr_pos[1],
+                   transform=self.wheelspeed_ax.transAxes)
+      self.wheelspeed_ax.text(cfg.gui_vel_fr_pos[0], cfg.gui_vel_fr_pos[1],
                    str(round(data['wheel_speed_front_right'],1)) + '\n(m/s)',
                    horizontalalignment='right',
                    verticalalignment='top',
-                   transform=self.ax.transAxes)
+                   transform=self.wheelspeed_ax.transAxes)
+      
+      self.steerangle_ax = plt.subplot(122)
+      self.steerangle_ax.axes.get_xaxis().set_visible(False)
+      self.steerangle_ax.axes.get_yaxis().set_visible(False)
+
+      # steerwheel picture
+      steerwheel_img_rot = ndimage.rotate(
+                             self.steerwheel_img,
+                             -data['steer_angle'],
+                             reshape=False )
+      plt.imshow(steerwheel_img_rot, extent=cfg.gui_steerwheel_extent, alpha=0.5)
+      # plt.imshow(self.steerwheel_img, cmap=plt.cm.gray, extent=cfg.gui_steerwheel_extent)
       plt.draw()
       plt.show()
     except Exception, e:
