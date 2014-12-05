@@ -38,6 +38,10 @@ class MOOSInterface(MOOSCommClient):
 
   def _on_mail(self):
     for msg in self.FetchRecentMail():
+      if cfg.is_live:
+        val = float(msg.GetString())
+      else:
+        val = msg.GetDouble()
       # figure out the key as defined in cfg.moos_vars
       key = [k for k,v in cfg.moos_vars.iteritems() if v == msg.GetKey()]
       if len(key):
@@ -46,11 +50,11 @@ class MOOSInterface(MOOSCommClient):
         continue
       # print 'key: ' + key + '  val: ' + str(msg.GetDouble())
       if 'wheel_rpm' in key:
-        speed = wheel_rpm_to_speed(msg.GetDouble())
+        speed = wheel_rpm_to_speed(val)
         data_key = 'wheel_speed_'+'_'.join(key.split('_')[2:])
         self.data[data_key] = speed
       elif key == 'steer_position':
-        self.data['steer_angle'] = steer_position_to_angle(msg.GetDouble())
+        self.data['steer_angle'] = steer_position_to_angle(val)
     # print '\nMOOSInterface'
     # pprint(self.data)
 
