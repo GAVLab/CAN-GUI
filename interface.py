@@ -6,7 +6,7 @@ from pymoos.MOOSCommClient import MOOSCommClient
 from copy import deepcopy
 import cfg
 from cfg import VehicleData
-from cfg import steer_position_to_angle, wheel_rpm_to_speed
+from cfg import wheel_rpm_to_speed
 
 
 
@@ -54,7 +54,7 @@ class MOOSInterface(MOOSCommClient):
         data_key = 'wheel_speed_'+'_'.join(key.split('_')[2:])
         self.data[data_key] = speed
       elif key == 'steer_position':
-        self.data['steer_angle'] = steer_position_to_angle(val)
+        self.data['steer_angle'] = val
     # print '\nMOOSInterface'
     # pprint(self.data)
 

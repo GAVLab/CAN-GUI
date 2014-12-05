@@ -41,7 +41,7 @@ gui_vel_fl_pos = ( gui_left   + gui_vel_text_horiz_offset ,
                    gui_top    - gui_vel_text_vert_offset  )
 gui_vel_fr_pos = ( gui_right  - gui_vel_text_horiz_offset , 
                    gui_top    - gui_vel_text_vert_offset  )
-gui_vel_max = 35.0
+gui_vel_bar_names = ['Rear\nLeft', 'Front\nLeft', 'Front\nRight', 'Rear\nRight']
 # drivetrain image
 gui_drivetrain_ratio = [3.0, 4.0]
 gui_drivetrain_size = [.6] # width height (3:4 ratio)\
@@ -59,25 +59,24 @@ print 'GUI Drivetrain Extent: ', pprint(gui_drivetrain_extent)
 gui_steerwheel_size = [.1, .1]
 gui_steerwheel_horiz_offset = 2
 gui_steerwheel_extent = [
-  0.5 + gui_steerwheel_horiz_offset,
-  0.5 + gui_steerwheel_horiz_offset + gui_steerwheel_size[0],
-  0.5 - gui_steerwheel_size[1]/2.0,
-  0.5 + gui_steerwheel_size[1]/2.0,
+  gui_steerwheel_horiz_offset,
+  gui_steerwheel_horiz_offset + gui_steerwheel_size[0],
+  gui_steerwheel_size[1]/2.0,
+  gui_steerwheel_size[1]/2.0,
   ]
+gui_tire_angle_length = 300
 print 'GUI SteeringWheel Extent: ', pprint(gui_steerwheel_extent)
 # Vehicle parameters
 wheel_diameter = 0.651
 wheel_radius = wheel_diameter/2.0
 wheel_circumference = wheel_diameter*pi
-steer_ratio = 15.9*2.0
-
+steer_ratio = 15.9*2
 ################################################################################
 ### Utility Functions
 ################################################################################
 
-def steer_position_to_angle(a):
-  """convert steer angle @ steering wheel reported over CAN to radians"""
-  return degrees(a/steer_ratio)
+def steer_position_to_tire_angle(a):
+  return a/steer_ratio
 
 def wheel_rpm_to_speed(r):
   """convert rpm reported as the wheel speed to actual speed"""
