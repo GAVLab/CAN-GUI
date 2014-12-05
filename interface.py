@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
-from time import time
+from time import sleep
+from pprint import pprint
 from pymoos.MOOSCommClient import MOOSCommClient
 from copy import deepcopy
 import cfg
@@ -8,16 +9,11 @@ from cfg import VehicleData
 from cfg import steer_position_to_angle, wheel_rpm_to_speed
 
 
-class BaseInterface(object):
-  data = VehicleData()
-  
-  def get_latest(self):
-    return deepcopy(self.data)
 
-
-class MOOSInterface(BaseInterface, MOOSCommClient):
+class MOOSInterface(MOOSCommClient):
 
   def __init__(self):
+    self.data = deepcopy(VehicleData)
     MOOSCommClient.__init__(self)
     self.SetOnConnectCallBack(self._on_connect)
     self.SetOnDisconnectCallBack(self._on_disconnect)
@@ -29,6 +25,7 @@ class MOOSInterface(BaseInterface, MOOSCommClient):
         continue
       print('CAN GUI Connected')
       return
+    print('CAN GUI Could not connect to MOOSDB')
     sys.exit()
 
   def _on_connect(self):
@@ -40,7 +37,6 @@ class MOOSInterface(BaseInterface, MOOSCommClient):
     sys.exit()
 
   def _on_mail(self):
-    # get the lock for the data struct
     for msg in self.FetchRecentMail():
       # figure out the key as defined in cfg.moos_vars
       key = [k for k,v in cfg.moos_vars.iteritems() if v == msg.GetKey()]
@@ -48,11 +44,19 @@ class MOOSInterface(BaseInterface, MOOSCommClient):
         key = key[0]
       else:
         continue
+      # print 'key: ' + key + '  val: ' + str(msg.GetDouble())
       if 'wheel_rpm' in key:
         speed = wheel_rpm_to_speed(msg.GetDouble())
-        self.data_key = 'wheel_speed_'+'_'.join(key.split('_')[2:])
-        self.data.__dict__[data_key] = speed
+        data_key = 'wheel_speed_'+'_'.join(key.split('_')[2:])
+        self.data[data_key] = speed
       elif key == 'steer_position':
-        self.data.steer_angle = steer_position_to_angle(msg.GetDouble())
-    # unlock the data att
+        self.data['steer_angle'] = steer_position_to_angle(msg.GetDouble())
+    # print '\nMOOSInterface'
+    # pprint(self.data)
 
+  def get_latest(self):
+    return deepcopy(self.data)
+
+  def exit(self):
+    self.Close()
+    sys.exit()
